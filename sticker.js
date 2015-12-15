@@ -43,7 +43,17 @@
     }
 
     function checkDerection(e, pos, sizeQ) {
-        var fx = pos.x, fy = pos.y, tx = e.pageX - fx, ty = e.pageY - fy, direction;
+
+        var pageX = e.pageX;
+        var pageY = e.pageY;
+
+        if (e.hasOwnProperty('touches')) {
+            var touch = e.touches[0];
+            pageX = touch.pageX;
+            pageY = touch.pageY;
+        }
+
+        var fx = pos.x, fy = pos.y, tx = pageX - fx, ty = pageY - fy, direction;
         if (tx < sizeQ) direction = 0; // left
         else if (tx > sizeQ * 3) direction = 1; // right
         else if (ty < sizeQ) direction = 2; // top
@@ -52,7 +62,17 @@
     }
 
     function checkPos(e, pos, size) {
-        var fx = pos.x, fy = pos.y, tx = e.pageX - fx, ty = e.pageY - fy, value,
+
+        var pageX = e.pageX;
+        var pageY = e.pageY;
+
+        if (e.hasOwnProperty('touches')) {
+            var touch = e.touches[0];
+            pageX = touch.pageX;
+            pageY = touch.pageY;
+        }
+
+        var fx = pos.x, fy = pos.y, tx = pageX - fx, ty = pageY - fy, value,
             a = size - tx, b = size - ty, c = tx >> 1, d = ty >> 1, e = a >> 1, f = b >> 1;
         if (_direction == 0) value = {bx:-size, by:0, sx:-1, sy:1, bs:'shadowL', bmx:-size + tx, bmy:0, bsw:tx, bsh:size, bsx:a, bsy:0, cw:size - c, ch:size, cx:c, cy:0, dw:c, dh:size, dx:c - (c >> 1), dy:0}; // left
         else if (_direction == 1) value = {bx:size, by:0, sx:-1, sy:1, bs:'shadowR', bmx:tx, bmy:0, bsw:a, bsh:size, bsx:0, bsy:0, cw:size - e, ch:size, cx:0, cy:0, dw:e, dh:size, dx:size - a + (e >> 1), dy:0}; // right
@@ -119,6 +139,12 @@
             onEnter(e, value);
             window.document.addEventListener('mouseup', function (e) {
                 this.removeEventListener('mouseup', arguments.callee, false);
+                this.removeEventListener('touchend', arguments.callee, false);
+                onLeave(e, value);
+            }, false);
+            window.document.addEventListener('touchend', function (e) {
+                this.removeEventListener('mouseup', arguments.callee, false);
+                this.removeEventListener('touchend', arguments.callee, false);
                 onLeave(e, value);
             }, false);
         }
@@ -248,10 +274,19 @@
             dom.addEventListener('mouseenter', function(e) {
                 onEnter(e, value);
             }, false);
+            dom.addEventListener('touchstart', function(e) {
+                onEnter(e, value);
+            }, false);
             dom.addEventListener('mouseleave', function(e) {
                 onLeave(e, value);
             }, false);
+            dom.addEventListener('touchend', function(e) {
+                onLeave(e, value);
+            }, false);
             dom.addEventListener('mousemove', function(e) {
+                onMove(e, value);
+            }, false);
+            dom.addEventListener('touchmove', function(e) {
                 onMove(e, value);
             }, false);
 
