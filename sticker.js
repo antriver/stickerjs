@@ -32,13 +32,17 @@
         if (s[prop] !== undefined) return prop;
     }
 
-    function css(el, prop) {
-        for (var n in prop) el.style[vendor(el, n) || n] = prop[n];
+    function applyCss(el, prop) {
+        for (var n in prop) {
+            if (prop.hasOwnProperty(n)) {
+                el.style[vendor(el, n) || n] = prop[n];
+            }
+        }
     }
 
-    function createEl(tag, prop) {
+    function createElement(tag, prop) {
         var el = document.createElement(tag || 'div');
-        css(el, prop);
+        applyCss(el, prop);
         return el;
     }
 
@@ -61,7 +65,7 @@
         return direction;
     }
 
-    function checkPos(e, pos, size) {
+    function checkPosition(e, pos, size) {
 
         var pageX = e.pageX;
         var pageY = e.pageY;
@@ -74,70 +78,81 @@
 
         var fx = pos.x, fy = pos.y, tx = pageX - fx, ty = pageY - fy, value,
             a = size - tx, b = size - ty, c = tx >> 1, d = ty >> 1, e = a >> 1, f = b >> 1;
-        if (_direction == 0) value = {
-            bx: -size,
-            by: 0,
-            sx: -1,
-            sy: 1,
-            bs: 'shadowL',
-            bmx: -size + tx,
-            bmy: 0,
-            bsw: tx,
-            bsh: size,
-            bsx: a,
-            bsy: 0,
-            cw: size - c,
-            ch: size,
-            cx: c,
-            cy: 0,
-            dw: c,
-            dh: size,
-            dx: c - (c >> 1),
-            dy: 0
-        }; // left
-        else if (_direction == 1) value = {
-            bx: size,
-            by: 0,
-            sx: -1,
-            sy: 1,
-            bs: 'shadowR',
-            bmx: tx,
-            bmy: 0,
-            bsw: a,
-            bsh: size,
-            bsx: 0,
-            bsy: 0,
-            cw: size - e,
-            ch: size,
-            cx: 0,
-            cy: 0,
-            dw: e,
-            dh: size,
-            dx: size - a + (e >> 1),
-            dy: 0
-        }; // right
-        else if (_direction == 2) value = {
-            bx: 0,
-            by: -size,
-            sx: 1,
-            sy: -1,
-            bs: 'shadowT',
-            bmx: 0,
-            bmy: -size + ty,
-            bsw: size,
-            bsh: ty,
-            bsx: 0,
-            bsy: b,
-            cw: size,
-            ch: size - d,
-            cx: 0,
-            cy: d,
-            dw: size,
-            dh: d,
-            dx: 0,
-            dy: d - (d >> 1)
-        }; // top
-        else value = {
+        if (_direction == 0) {
+            // left
+            value = {
+                bx: -size,
+                by: 0,
+                sx: -1,
+                sy: 1,
+                bs: 'shadowL',
+                bmx: -size + tx,
+                bmy: 0,
+                bsw: tx,
+                bsh: size,
+                bsx: a,
+                bsy: 0,
+                cw: size - c,
+                ch: size,
+                cx: c,
+                cy: 0,
+                dw: c,
+                dh: size,
+                dx: c - (c >> 1),
+                dy: 0
+            };
+        }
+        else if (_direction == 1) {
+            // right
+            value = {
+                bx: size,
+                by: 0,
+                sx: -1,
+                sy: 1,
+                bs: 'shadowR',
+                bmx: tx,
+                bmy: 0,
+                bsw: a,
+                bsh: size,
+                bsx: 0,
+                bsy: 0,
+                cw: size - e,
+                ch: size,
+                cx: 0,
+                cy: 0,
+                dw: e,
+                dh: size,
+                dx: size - a + (e >> 1),
+                dy: 0
+            };
+        }
+        else if (_direction == 2) {
+            // top
+            value = {
+                bx: 0,
+                by: -size,
+                sx: 1,
+                sy: -1,
+                bs: 'shadowT',
+                bmx: 0,
+                bmy: -size + ty,
+                bsw: size,
+                bsh: ty,
+                bsx: 0,
+                bsy: b,
+                cw: size,
+                ch: size - d,
+                cx: 0,
+                cy: d,
+                dw: size,
+                dh: d,
+                dx: 0,
+                dy: d - (d >> 1)
+            };
+        }
+        else {
+            // bottom
+            value = {
                 bx: 0,
                 by: size,
                 sx: 1,
@@ -157,7 +172,8 @@
                 dh: f,
                 dx: 0,
                 dy: size - b + (f >> 1)
-            }; // bottom
+            };
+        }
         return value;
     }
 
@@ -165,51 +181,56 @@
         var cpos = value.container.getBoundingClientRect(),
             mpos = {x: cpos.left + window.pageXOffset, y: cpos.top + window.pageYOffset};
         _direction = checkDirection(e, mpos, value.sizeQ);
-        _savePos = checkPos(e, mpos, value.size);
+        _savePos = checkPosition(e, mpos, value.size);
         _savePos.pos = mpos;
         var bx = _savePos.bx, by = _savePos.by, sx = _savePos.sx, sy = _savePos.sy, bs = _savePos.bs;
         value.backShadow.className = value.depth.className = 'sticker-shadow ' + bs;
-        css(value.mask, {
+
+        applyCss(value.mask, {
             transition: _setTrans,
             width: value.size + 'px',
             height: value.size + 'px',
-            transform: 'translate(' + 0 + 'px, ' + 0 + 'px)'
+            transform: 'translate3d(' + 0 + 'px, ' + 0 + 'px, 0)'
         });
-        css(value.move, {
+        applyCss(value.move, {
             transition: _setTrans,
-            transform: 'translate(' + 0 + 'px, ' + 0 + 'px)'
+            transform: 'translate3d(' + 0 + 'px, ' + 0 + 'px, 0)'
         });
-        css(value.back, {
+        applyCss(value.back, {
             transition: _setTrans,
-            transform: 'translate(' + bx + 'px, ' + by + 'px)'
+            transform: 'translate3d(' + bx + 'px, ' + by + 'px, 0)'
         });
-        css(value.backImg, {
+        applyCss(value.backImg, {
             transform: 'scaleX(' + sx + ') scaleY(' + sy + ')'
         });
-        css(value.depth, {
-            transform: 'translate(' + -10000 + 'px, ' + -10000 + 'px)'
+        applyCss(value.depth, {
+            transform: 'translate3d(' + -10000 + 'px, ' + -10000 + 'px, 0)'
         });
     }
 
     function onLeave(e, value) {
-        if (_savePos == null) return;
+        if (_savePos == null) {
+            return;
+        }
+
         var bx = _savePos.bx, by = _savePos.by;
-        css(value.mask, {
+
+        applyCss(value.mask, {
             transition: _aniTrans,
             width: value.size + 'px',
             height: value.size + 'px',
-            transform: 'translate(' + 0 + 'px, ' + 0 + 'px)'
+            transform: 'translate3d(' + 0 + 'px, ' + 0 + 'px, 0)'
         });
-        css(value.move, {
+        applyCss(value.move, {
             transition: _aniTrans,
-            transform: 'translate(' + 0 + 'px, ' + 0 + 'px)'
+            transform: 'translate3d(' + 0 + 'px, ' + 0 + 'px, 0)'
         });
-        css(value.back, {
+        applyCss(value.back, {
             transition: _aniTrans,
-            transform: 'translate(' + bx + 'px, ' + by + 'px)'
+            transform: 'translate3d(' + bx + 'px, ' + by + 'px, 0)'
         });
-        css(value.depth, {
-            transform: 'translate(' + -10000 + 'px, ' + -10000 + 'px)'
+        applyCss(value.depth, {
+            transform: 'translate3d(' + -10000 + 'px, ' + -10000 + 'px, 0)'
         });
         _savePos = null;
     }
@@ -228,39 +249,48 @@
                 onLeave(e, value);
             }, false);
         }
-        var pos = checkPos(e, _savePos.pos, value.size),
+        var pos = checkPosition(e, _savePos.pos, value.size),
             bmx = pos.bmx, bmy = pos.bmy,
             bsw = pos.bsw, bsh = pos.bsh, bsx = pos.bsx, bsy = pos.bsy,
             cw = pos.cw, ch = pos.ch, cx = pos.cx, cy = pos.cy,
             dw = pos.dw, dh = pos.dh, dx = pos.dx, dy = pos.dy;
-        css(value.mask, {
+        applyCss(value.mask, {
             width: cw + 'px',
             height: ch + 'px',
-            transform: 'translate(' + cx + 'px, ' + cy + 'px)'
+            transform: 'translate3d(' + cx + 'px, ' + cy + 'px, 0)'
         });
-        css(value.move, {
-            transform: 'translate(' + -cx + 'px, ' + -cy + 'px)'
+        applyCss(value.move, {
+            transform: 'translate3d(' + -cx + 'px, ' + -cy + 'px, 0)'
         });
-        css(value.back, {
-            transform: 'translate(' + bmx + 'px, ' + bmy + 'px)'
+        applyCss(value.back, {
+            transform: 'translate3d(' + bmx + 'px, ' + bmy + 'px, 0)'
         });
-        css(value.backShadow, {
+        applyCss(value.backShadow, {
             width: bsw + 'px',
             height: bsh + 'px',
-            transform: 'translate(' + bsx + 'px, ' + bsy + 'px)'
+            transform: 'translate3d(' + bsx + 'px, ' + bsy + 'px, 0)'
         });
-        css(value.depth, {
+        applyCss(value.depth, {
             width: dw + 'px',
             height: dh + 'px',
-            transform: 'translate(' + dx + 'px, ' + dy + 'px)'
+            transform: 'translate3d(' + dx + 'px, ' + dy + 'px, 0)'
         });
     }
 
     var sticker = {
+
+        /**
+         * Attach to the given DOM element.
+         * Register event listeners for mouse movement.
+         *
+         * @param {Element|string} dom
+         */
         init: function init(dom) {
             if (typeof dom === 'string') {
                 var item = document.querySelectorAll(dom), i, total = item.length;
-                for (i = 0; i < total; i++) init(item[i]);
+                for (i = 0; i < total; i++) {
+                    init(item[i]);
+                }
                 return;
             }
 
@@ -268,33 +298,33 @@
                 pos = dom.getBoundingClientRect(),
                 size = pos.width,
                 sizeQ = size >> 2,
-                container = createEl('div', {
+                container = createElement('div', {
                     position: 'relative',
                     width: size + 'px',
                     height: size + 'px',
                     overflow: 'hidden'
                 }),
-                mask = createEl('div', {
+                mask = createElement('div', {
                     position: 'relative',
                     width: size + 'px',
                     height: size + 'px',
                     overflow: 'hidden'
                 }),
-                move = createEl('div', {
+                move = createElement('div', {
                     position: 'relative',
                     borderRadius: '50%',
                     width: size + 'px',
                     height: size + 'px',
                     overflow: 'hidden'
                 }),
-                front = createEl('div', {
+                front = createElement('div', {
                     position: 'relative',
                     borderRadius: '50%',
                     width: size + 'px',
                     height: size + 'px',
                     zIndex: 1
                 }),
-                back = createEl('div', {
+                back = createElement('div', {
                     position: 'absolute',
                     borderRadius: '50%',
                     width: size + 'px',
@@ -303,17 +333,17 @@
                     top: '0',
                     zIndex: 3,
                     backgroundColor: '#ffffff',
-                    transform: 'translate(' + size + 'px, ' + 0 + 'px)',
+                    transform: 'translate3d(' + size + 'px, ' + 0 + 'px, 0)',
                     overflow: 'hidden'
                 }),
-                backImg = createEl('div', {
+                backImg = createElement('div', {
                     position: 'relative',
                     borderRadius: '50%',
                     width: size + 'px',
                     height: size + 'px',
                     opacity: '0.4'
                 }),
-                backShadow = createEl('div', {
+                backShadow = createElement('div', {
                     position: 'absolute',
                     width: size + 'px',
                     height: size + 'px',
@@ -321,7 +351,7 @@
                     top: '0',
                     zIndex: 4
                 }),
-                depth = createEl('div', {
+                depth = createElement('div', {
                     position: 'absolute',
                     width: size + 'px',
                     height: size + 'px',
@@ -330,9 +360,13 @@
                     zIndex: 1
                 });
 
+            container.className = 'sticker-container';
+            move.className = 'sticker-move';
             front.className = 'sticker-img sticker-front';
+            back.className = 'sticker-img sticker-back2';
             backImg.className = 'sticker-img sticker-back';
             backShadow.className = depth.className = 'sticker-shadow';
+            depth.className = depth.className = 'sticker-depth';
 
             // If "data-sticker-img" attribute is set, use that as the image
             if (typeof dom.dataset.stickerImg === 'string') {
