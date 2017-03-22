@@ -1,8 +1,17 @@
 {
   "name": "stickerjs",
   "version": "1.0.0",
-  "description": "Sticker.js",
-  "author": "",
+  "description": "Stickerjs",
+  "author": {
+    "name" : "Jongmin Kim",
+    "url" : "https://github.com/cmiscm"
+  },
+  "contributors": [
+    {
+      "name": "Anthony Kuske",
+      "url": "https://github.com/antriver"
+    }
+  ],
   "license": "MIT",
   "homepage": "https://github.com/antriver/stickerjs"
 }

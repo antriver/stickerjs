@@ -2,10 +2,10 @@
  * Sticker.js: A Javascript library that allows you to create a Sticker Effect
  *
  * @project-site    http://stickerjs.cmiscm.com/
- * @repository		https://github.com/cmiscm/stickerjs
- * @author		    Jongmin Kim - cmiscm.com
- * @version 	    1.0 (2014/02/05)
- * @license		    MIT License
+ * @repository        https://github.com/cmiscm/stickerjs
+ * @author            Jongmin Kim - cmiscm.com
+ * @version        1.0 (2014/02/05)
+ * @license            MIT License
  */
 
 (function () {
@@ -25,15 +25,15 @@
     function vendor(el, prop) {
         var s = el.style, pp, i;
         prop = prop.charAt(0).toUpperCase() + prop.slice(1);
-        for(i=0; i<_prefixes.length; i++) {
-            pp = _prefixes[i]+prop;
-            if(s[pp] !== undefined) return pp;
+        for (i = 0; i < _prefixes.length; i++) {
+            pp = _prefixes[i] + prop;
+            if (s[pp] !== undefined) return pp;
         }
-        if(s[prop] !== undefined) return prop;
+        if (s[prop] !== undefined) return prop;
     }
 
     function css(el, prop) {
-        for (var n in prop) el.style[vendor(el, n)||n] = prop[n];
+        for (var n in prop) el.style[vendor(el, n) || n] = prop[n];
     }
 
     function createEl(tag, prop) {
@@ -42,7 +42,7 @@
         return el;
     }
 
-    function checkDerection(e, pos, sizeQ) {
+    function checkDirection(e, pos, sizeQ) {
 
         var pageX = e.pageX;
         var pageY = e.pageY;
@@ -74,17 +74,97 @@
 
         var fx = pos.x, fy = pos.y, tx = pageX - fx, ty = pageY - fy, value,
             a = size - tx, b = size - ty, c = tx >> 1, d = ty >> 1, e = a >> 1, f = b >> 1;
-        if (_direction == 0) value = {bx:-size, by:0, sx:-1, sy:1, bs:'shadowL', bmx:-size + tx, bmy:0, bsw:tx, bsh:size, bsx:a, bsy:0, cw:size - c, ch:size, cx:c, cy:0, dw:c, dh:size, dx:c - (c >> 1), dy:0}; // left
-        else if (_direction == 1) value = {bx:size, by:0, sx:-1, sy:1, bs:'shadowR', bmx:tx, bmy:0, bsw:a, bsh:size, bsx:0, bsy:0, cw:size - e, ch:size, cx:0, cy:0, dw:e, dh:size, dx:size - a + (e >> 1), dy:0}; // right
-        else if (_direction == 2) value = {bx:0, by:-size, sx:1, sy:-1, bs:'shadowT', bmx:0, bmy:-size + ty, bsw:size, bsh:ty, bsx:0, bsy:b, cw:size, ch:size - d, cx:0, cy:d, dw:size, dh:d, dx:0, dy:d - (d >> 1)}; // top
-        else value = {bx:0, by:size, sx:1, sy:-1, bs:'shadowB', bmx:0, bmy:ty, bsw:size, bsh:b, bsx:0, bsy:0, cw:size, ch:size - f, cx:0, cy:0, dw:size, dh:f, dx:0, dy:size - b + (f >> 1)}; // bottom
+        if (_direction == 0) value = {
+            bx: -size,
+            by: 0,
+            sx: -1,
+            sy: 1,
+            bs: 'shadowL',
+            bmx: -size + tx,
+            bmy: 0,
+            bsw: tx,
+            bsh: size,
+            bsx: a,
+            bsy: 0,
+            cw: size - c,
+            ch: size,
+            cx: c,
+            cy: 0,
+            dw: c,
+            dh: size,
+            dx: c - (c >> 1),
+            dy: 0
+        }; // left
+        else if (_direction == 1) value = {
+            bx: size,
+            by: 0,
+            sx: -1,
+            sy: 1,
+            bs: 'shadowR',
+            bmx: tx,
+            bmy: 0,
+            bsw: a,
+            bsh: size,
+            bsx: 0,
+            bsy: 0,
+            cw: size - e,
+            ch: size,
+            cx: 0,
+            cy: 0,
+            dw: e,
+            dh: size,
+            dx: size - a + (e >> 1),
+            dy: 0
+        }; // right
+        else if (_direction == 2) value = {
+            bx: 0,
+            by: -size,
+            sx: 1,
+            sy: -1,
+            bs: 'shadowT',
+            bmx: 0,
+            bmy: -size + ty,
+            bsw: size,
+            bsh: ty,
+            bsx: 0,
+            bsy: b,
+            cw: size,
+            ch: size - d,
+            cx: 0,
+            cy: d,
+            dw: size,
+            dh: d,
+            dx: 0,
+            dy: d - (d >> 1)
+        }; // top
+        else value = {
+                bx: 0,
+                by: size,
+                sx: 1,
+                sy: -1,
+                bs: 'shadowB',
+                bmx: 0,
+                bmy: ty,
+                bsw: size,
+                bsh: b,
+                bsx: 0,
+                bsy: 0,
+                cw: size,
+                ch: size - f,
+                cx: 0,
+                cy: 0,
+                dw: size,
+                dh: f,
+                dx: 0,
+                dy: size - b + (f >> 1)
+            }; // bottom
         return value;
     }
 
     function onEnter(e, value) {
         var cpos = value.container.getBoundingClientRect(),
-            mpos = {x:cpos.left + window.pageXOffset, y:cpos.top + window.pageYOffset};
-        _direction = checkDerection(e, mpos, value.sizeQ);
+            mpos = {x: cpos.left + window.pageXOffset, y: cpos.top + window.pageYOffset};
+        _direction = checkDirection(e, mpos, value.sizeQ);
         _savePos = checkPos(e, mpos, value.size);
         _savePos.pos = mpos;
         var bx = _savePos.bx, by = _savePos.by, sx = _savePos.sx, sy = _savePos.sy, bs = _savePos.bs;
@@ -180,7 +260,7 @@
         init: function init(dom) {
             if (typeof dom === 'string') {
                 var item = document.querySelectorAll(dom), i, total = item.length;
-                for (i=0; i<total; i++) init(item[i]);
+                for (i = 0; i < total; i++) init(item[i]);
                 return;
             }
 
@@ -269,24 +349,39 @@
             back.appendChild(backImg);
             back.appendChild(backShadow);
 
-            value = {container:container, size:size, sizeQ:sizeQ, mask:mask, move:move, depth:depth, back:back, backImg:backImg, backShadow:backShadow};
+            value = {
+                container: container,
+                size: size,
+                sizeQ: sizeQ,
+                mask: mask,
+                move: move,
+                depth: depth,
+                back: back,
+                backImg: backImg,
+                backShadow: backShadow
+            };
 
-            dom.addEventListener('mouseenter', function(e) {
+            // Enter
+            dom.addEventListener('mouseenter', function (e) {
                 onEnter(e, value);
             }, false);
-            dom.addEventListener('touchstart', function(e) {
+            dom.addEventListener('touchstart', function (e) {
                 onEnter(e, value);
             }, false);
-            dom.addEventListener('mouseleave', function(e) {
+
+            // Leave
+            dom.addEventListener('mouseleave', function (e) {
                 onLeave(e, value);
             }, false);
-            dom.addEventListener('touchend', function(e) {
+            dom.addEventListener('touchend', function (e) {
                 onLeave(e, value);
             }, false);
-            dom.addEventListener('mousemove', function(e) {
+
+            // Move
+            dom.addEventListener('mousemove', function (e) {
                 onMove(e, value);
             }, false);
-            dom.addEventListener('touchmove', function(e) {
+            dom.addEventListener('touchmove', function (e) {
                 onMove(e, value);
             }, false);
 
@@ -295,9 +390,11 @@
     }
 
     /* CommonJS */
-    if (typeof exports == 'object')  module.exports = sticker;
+    if (typeof exports == 'object') module.exports = sticker;
     /* AMD module */
-    else if (typeof define == 'function' && define.amd) define(function(){ return sticker });
+    else if (typeof define == 'function' && define.amd) define(function () {
+        return sticker
+    });
     /* Browser global */
     else this.Sticker = sticker;
 })();
