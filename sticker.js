@@ -10,6 +10,22 @@
 
 (function () {
 
+    function SimpleCircle(x, y, r) {
+        this.centerX = x;
+        this.centerY = y;
+        this.radius = r;
+    };
+
+    SimpleCircle.prototype = {
+        distanceTo: function(pageX, pageY) {
+            return Math.sqrt(Math.pow(pageX - this.centerX, 2) + Math.pow(pageY - this.centerY, 2));
+        },
+        includesXY: function(x, y) {
+            return this.distanceTo(x, y) <= this.radius;
+        }
+    };
+
+    var circle;
     var _direction, _savePos = null,
         _prefixes = ['webkit', 'Moz', 'ms', 'O'],
         _aniTrans = 'all 0.6s cubic-bezier(.23,1,.32,1)',
@@ -394,6 +410,10 @@
                 backImg: backImg,
                 backShadow: backShadow
             };
+
+            var radius = pos.width / 2;
+            circle = new SimpleCircle(0, 0, radius);
+            console.log(circle);
 
             // Enter
             dom.addEventListener('mouseenter', function (e) {
